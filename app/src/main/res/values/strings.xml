@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Notas</string>
+
+    <string name="view_trash">Papelera</string>
+
+    <string name="cd_edit_note">Editar</string>
+    <string name="cd_delete_note">Eliminar</string>
+    <string name="cd_add_note">Añadir</string>
+    <string name="cd_save_note">Guardar</string>
+    <string name="cd_more_menu">Más</string>
+</resources>
