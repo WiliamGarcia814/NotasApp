@@ -8,6 +8,8 @@
 
     <string name="tf_title">Título</string>
     <string name="tf_content">Escribe tu nota aquí...</string>
+    <string name="txt_color_note">Selecciona un color</string>
+    <string name="txt_close">Cerrar</string>
 
     <string name="cd_edit_note">Editar</string>
     <string name="cd_delete_note">Eliminar</string>
@@ -18,4 +20,5 @@
     <string name="cd_save_note">Guardar</string>
     <string name="cd_more_menu">Más opciones</string>
     <string name="cd_back">Regresar</string>
+    <string name="cd_color_note">Seleccionar color</string>
 </resources>

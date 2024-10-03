@@ -1,5 +1,6 @@
 package com.whgarcia.notas.model
 
+import androidx.compose.ui.graphics.Color
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -17,5 +18,7 @@ data class Notas (
     @ColumnInfo(name = "edit_date")
     val edit_date: String,
     @ColumnInfo(name = "delete_note")
-    val delete: Boolean = false
+    val delete: Boolean = false,
+    @ColumnInfo(name = "color_note")
+    val color_note: Int
 )

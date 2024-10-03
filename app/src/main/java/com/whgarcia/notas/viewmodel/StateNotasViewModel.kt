@@ -39,7 +39,8 @@ class StateNotasViewModel @Inject constructor(private val repository: NotasRepos
                         title = item.title,
                         content = item.content,
                         create_date = item.create_date,
-                        edit_date = item.edit_date
+                        edit_date = item.edit_date,
+                        color = item.color_note
                     )
                 }else{
                     Log.d("StateNotasViewModel", "Error: Objeto nulo")
@@ -54,7 +55,8 @@ class StateNotasViewModel @Inject constructor(private val repository: NotasRepos
             content = "",
             create_date = "",
             edit_date = "",
-            edit = false
+            edit = false,
+            color = 0
         )
     }
 }

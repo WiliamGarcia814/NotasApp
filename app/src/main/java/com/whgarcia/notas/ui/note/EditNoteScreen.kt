@@ -23,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +36,7 @@ import com.whgarcia.notas.R
 import com.whgarcia.notas.model.Notas
 import com.whgarcia.notas.state.NotasState
 import com.whgarcia.notas.ui.components.BoxWithIconButton
+import com.whgarcia.notas.ui.components.ColorPickerDialog
 import com.whgarcia.notas.ui.components.ContentTextField
 import com.whgarcia.notas.ui.components.FloatingButton
 import com.whgarcia.notas.ui.components.MainTextField
@@ -49,13 +52,20 @@ fun EditNoteScreen(
     id: Long,
     notasVM: NotasViewModel
 ) {
-    var expanded by remember { mutableStateOf(false) } // Estado para el menú desplegable
     // Cargar la nota cuando se lance el Composable
     val state = stateNoteVM.state
+    var expanded by remember { mutableStateOf(false) } // Estado para el menú desplegable
+    var selectedColor by remember { mutableStateOf(Color(state.color)) } // Color seleccionado por defecto
+    var isColorPickerVisible by remember { mutableStateOf(false) }  // Estado para controlar la visibilidad del diálogo
 
     // Cargar la nota cuando se lance el Composable
     LaunchedEffect(Unit) {
         stateNoteVM.getNoteById(id)
+    }
+
+    // Observar cambios en el estado y actualizar el color
+    LaunchedEffect(state) {
+        selectedColor = Color(state.color) // Actualizar el color seleccionado cuando el estado cambia
     }
 
     // Manejar el botón "Atrás" del sistema
@@ -99,7 +109,7 @@ fun EditNoteScreen(
                     )
                 },
                 actions = {
-
+                    // Vista prevía
                     if (!state.edit){
                         // Botón de Editar
                         BoxWithIconButton(
@@ -141,13 +151,23 @@ fun EditNoteScreen(
                                             content = state.content,
                                             create_date = state.create_date,
                                             edit_date = state.edit_date,
-                                            delete = true
+                                            delete = true,
+                                            color_note = state.color
                                         )
                                     )
                                     navController.popBackStack()
                                 }
                             )
                         }
+                    }else{
+                        // Botón para mostrar el menú de colores
+                        BoxWithIconButton(
+                            onClick = { isColorPickerVisible = true },
+                            icon = painterResource(id = R.drawable.ic_palette_24),
+                            desc = stringResource(id = R.string.cd_color_note),
+                            modifier = Modifier.padding(end = 16.dp),
+                            contentColor = selectedColor
+                        )
                     }
                 }
             )
@@ -163,7 +183,8 @@ fun EditNoteScreen(
                                 title = state.title,
                                 content = state.content,
                                 create_date = state.create_date,
-                                edit_date = dateAndTimeNow()
+                                edit_date = dateAndTimeNow(),
+                                color_note = selectedColor.toArgb()
                             )
                         )
                         // Navega hacia atrás después de actualizar la nota
@@ -181,6 +202,19 @@ fun EditNoteScreen(
             state,
             stateNoteVM = stateNoteVM
         )
+        // Mostrar el diálogo de selección de color cuando `isColorPickerVisible` sea true
+        if (isColorPickerVisible) {
+            ColorPickerDialog(
+                selectedColor = selectedColor,
+                onColorSelected = { color ->
+                    selectedColor = color  // Actualizar el color seleccionado
+                    isColorPickerVisible = false  // Cerrar el diálogo al seleccionar un color
+                },
+                onDismiss = {
+                    isColorPickerVisible = false  // Cerrar el diálogo si se cancela
+                }
+            )
+        }
     }
 }
 

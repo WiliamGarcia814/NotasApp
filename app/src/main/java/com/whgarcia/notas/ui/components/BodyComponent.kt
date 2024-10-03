@@ -1,17 +1,26 @@
 package com.whgarcia.notas.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -88,8 +97,8 @@ fun GridCard(item: Notas, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Blue,
-            contentColor = Color.White
+            containerColor = Color(item.color_note),
+            contentColor = Color.Black
         )
     ) {
         Column(
@@ -119,8 +128,8 @@ fun ListCard(item: Notas, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Blue,
-            contentColor = Color.White
+            containerColor = Color(item.color_note),
+            contentColor = Color.Black
         )
     ) {
         Column(
@@ -139,4 +148,35 @@ fun ListCard(item: Notas, onClick: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+fun ColorPickerDialog(selectedColor: Color, onColorSelected: (Color) -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = stringResource(id = R.string.txt_color_note)) },
+        text = {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                ColorButton(color = Color.Red, selectedColor = selectedColor, onClick = onColorSelected)
+                ColorButton(color = Color.Green, selectedColor = selectedColor, onClick = onColorSelected)
+                ColorButton(color = Color.Blue, selectedColor = selectedColor, onClick = onColorSelected)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text(text = stringResource(id = R.string.txt_close))
+            }
+        }
+    )
+}
+
+@Composable
+fun ColorButton(color: Color, selectedColor: Color, onClick: (Color) -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(50.dp)
+            .background(color, shape = CircleShape)  // Forma del color
+            .border(4.dp, if (color == selectedColor) Color.Black else Color.Transparent, shape = CircleShape)  // Borde negro si el color está seleccionado
+            .clickable { onClick(color) }
+    )
 }

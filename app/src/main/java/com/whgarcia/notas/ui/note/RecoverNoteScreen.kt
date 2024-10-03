@@ -77,7 +77,8 @@ fun RecoverNoteScreen(
                                     content = state.content,
                                     create_date = state.create_date,
                                     edit_date = state.edit_date,
-                                    delete = false
+                                    delete = false,
+                                    color_note = state.color
                                 )
                             )
                             navController.popBackStack()
@@ -94,7 +95,8 @@ fun RecoverNoteScreen(
                                     title = state.title,
                                     content = state.content,
                                     create_date = state.create_date,
-                                    edit_date = state.edit_date
+                                    edit_date = state.edit_date,
+                                    color_note = state.color
                                 )
                             )
                             navController.popBackStack()
