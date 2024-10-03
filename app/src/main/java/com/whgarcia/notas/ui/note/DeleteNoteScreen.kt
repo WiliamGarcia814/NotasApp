@@ -7,12 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,12 +17,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.whgarcia.notas.R
+import com.whgarcia.notas.ui.components.BoxWithIconButton
 import com.whgarcia.notas.ui.components.ListCard
 import com.whgarcia.notas.viewmodel.NotasViewModel
 
@@ -44,19 +42,25 @@ fun DeleteNoteScreen(navController: NavHostController, notasVM: NotasViewModel) 
                     Text(
                         text = stringResource(R.string.view_trash),
                         fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp)
                     )
                 },
                 actions = {
                     // Botón para eliminar todas las notas
-                    IconButton(onClick = { }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar todo")
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_delete_24),
+                        contentDescription = stringResource(id = R.string.cd_delete_all_notes),
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar")
-                    }
+                    BoxWithIconButton(
+                        onClick = { navController.popBackStack() },
+                        icon = painterResource(id = R.drawable.ic_arrow_back_24),
+                        desc = stringResource(id = R.string.cd_back),
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
                 }
             )
         }
@@ -70,9 +74,13 @@ fun DeleteNoteScreen(navController: NavHostController, notasVM: NotasViewModel) 
 }
 
 @Composable
-fun DeleteNoteContent(modifier: Modifier, notasVM: NotasViewModel, navController: NavHostController){
+fun DeleteNoteContent(
+    modifier: Modifier,
+    notasVM: NotasViewModel,
+    navController: NavHostController
+){
     Column(
-        modifier = modifier
+        modifier = modifier.padding(16.dp)
     ) {
         // Observar el StateFlow de las notas eliminadas
         val deletedNotes by notasVM.deletedNotes.collectAsState()

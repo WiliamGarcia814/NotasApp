@@ -1,26 +1,19 @@
 package com.whgarcia.notas.ui.note
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -28,18 +21,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.whgarcia.notas.R
 import com.whgarcia.notas.model.Notas
 import com.whgarcia.notas.state.NotasState
+import com.whgarcia.notas.ui.components.BoxWithIconButton
 import com.whgarcia.notas.ui.components.ContentTextField
 import com.whgarcia.notas.ui.components.FloatingButton
 import com.whgarcia.notas.ui.components.MainTextField
-import com.whgarcia.notas.ui.components.dateAndTimeEditNow
 import com.whgarcia.notas.ui.components.dateAndTimeNow
 import com.whgarcia.notas.viewmodel.NotasViewModel
 import com.whgarcia.notas.viewmodel.StateNotasViewModel
@@ -76,41 +73,64 @@ fun EditNoteScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    if (state.edit){
-                        MainTextField(value = state.title, onValueChange = { stateNoteVM.onValue(it, "title") })
-                    }else{
-                        Text(
-                            text = state.title
-                        )
-                    }
+                    Text(
+                        text = state.title,
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
                 navigationIcon = {
-                    if (!state.edit){
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar")
-                        }
-                    }
+                    BoxWithIconButton(
+                        onClick = {
+                            if (state.edit){
+                                // Si está en modo de edición, cambiar al modo de vista previa
+                                stateNoteVM.toggleEditMode() // Cambia el estado de edición
+                            }else{
+                                // Si no está en modo de edición, salir de la pantalla normalmente
+                                navController.popBackStack()
+                            }
+                        },
+                        icon = painterResource(id = R.drawable.ic_arrow_back_24),
+                        desc = stringResource(id = R.string.cd_back),
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
                 },
                 actions = {
-                    // Botón de Editar
+
                     if (!state.edit){
-                        IconButton(onClick = {stateNoteVM.toggleEditMode()}) {
-                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
-                        }
+                        // Botón de Editar
+                        BoxWithIconButton(
+                            onClick = { stateNoteVM.toggleEditMode() },
+                            icon = painterResource(id = R.drawable.ic_edit_24),
+                            desc = stringResource(id = R.string.cd_edit_note),
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
                         // Botón para mostrar más opciones
-                        IconButton(onClick = { expanded = true }) {
-                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Más opciones")
-                        }
+                        BoxWithIconButton(
+                            onClick = { expanded = true},
+                            icon = painterResource(id = R.drawable.ic_more_vert_24),
+                            desc = stringResource(id = R.string.cd_more_menu),
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
                         // Menú desplegable con opciones
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Eliminar") },
+                                text = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_delete_24),
+                                            contentDescription = stringResource(id = R.string.cd_delete_note),
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                        Text(stringResource(id = R.string.cd_delete_note))
+                                    }
+                                },
                                 onClick = {
                                     expanded = false
                                     // Acción cuando se presiona eliminar
@@ -143,7 +163,7 @@ fun EditNoteScreen(
                                 title = state.title,
                                 content = state.content,
                                 create_date = state.create_date,
-                                edit_date = dateAndTimeEditNow()
+                                edit_date = dateAndTimeNow()
                             )
                         )
                         // Navega hacia atrás después de actualizar la nota
@@ -173,24 +193,25 @@ fun EditContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(4.dp)
+            .padding(16.dp)
     ) {
-        Row(
+        MainTextField(
+            value = state.title,
+            onValueChange = {stateNoteVM.onValue(it, "title")},
+            enabled = state.edit
+        )
+        Text(
+            text = state.create_date,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = if(state.edit) "Editando" else state.edit_date)
-            Text(text = state.create_date)
-        }
-        if (state.edit){
-            ContentTextField(
-                value = state.content,
-                onValueChange = {stateNoteVM.onValue(it, "content")}
-            )
-        }else{
-            Text(text = state.content)
-        }
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+        )
+        ContentTextField(
+            value = state.content,
+            onValueChange = {stateNoteVM.onValue(it, "content")},
+            enabled = state.edit
+        )
     }
 
     DisposableEffect(Unit) {

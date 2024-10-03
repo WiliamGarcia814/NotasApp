@@ -2,10 +2,20 @@
     <string name="app_name">Notas</string>
 
     <string name="view_trash">Papelera</string>
+    <string name="view_grid">Cuadrícula</string>
+    <string name="view_list">Lista</string>
+    <string name="view_add_note">Añadir nota</string>
+
+    <string name="tf_title">Título</string>
+    <string name="tf_content">Escribe tu nota aquí...</string>
 
     <string name="cd_edit_note">Editar</string>
     <string name="cd_delete_note">Eliminar</string>
+    <string name="cd_delete_forever_note">Eliminar definitivamente</string>
+    <string name="cd_delete_all_notes">Eliminar todas las notas</string>
+    <string name="cd_recover_note">Recuperar</string>
     <string name="cd_add_note">Añadir</string>
     <string name="cd_save_note">Guardar</string>
-    <string name="cd_more_menu">Más</string>
+    <string name="cd_more_menu">Más opciones</string>
+    <string name="cd_back">Regresar</string>
 </resources>

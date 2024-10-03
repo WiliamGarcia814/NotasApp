@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         val stateNoteVM : StateNotasViewModel by viewModels()
         val notasVM : NotasViewModel by viewModels()
         setContent {
-            NotasTheme {
+            NotasTheme{
                 NavManager(stateNoteVM, notasVM)
             }
         }
