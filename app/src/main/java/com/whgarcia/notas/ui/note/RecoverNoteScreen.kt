@@ -4,15 +4,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,18 +73,7 @@ fun RecoverNoteScreen(
                     // Boton para recuperar la nota
                     BoxWithIconButton(
                         onClick = {
-                            notasVM.updateNote(
-                                Notas(
-                                    id = id,
-                                    title = state.title,
-                                    content = state.content,
-                                    create_date = state.create_date,
-                                    edit_date = state.edit_date,
-                                    delete = false,
-                                    color_note = state.color
-                                )
-                            )
-                            navController.popBackStack()
+                            stateNoteVM.showRecoverConfirmation()
                         },
                         icon = painterResource(id = R.drawable.ic_replay_24),
                         desc = stringResource(id = R.string.cd_recover_note),
@@ -90,16 +82,7 @@ fun RecoverNoteScreen(
                     // Boton para eliminar la nota
                     BoxWithIconButton(
                         onClick = {
-                            notasVM.deleteNote(
-                                Notas(id = id,
-                                    title = state.title,
-                                    content = state.content,
-                                    create_date = state.create_date,
-                                    edit_date = state.edit_date,
-                                    color_note = state.color
-                                )
-                            )
-                            navController.popBackStack()
+                            stateNoteVM.showDeleteConfirmation()
                         },
                         icon = painterResource(id = R.drawable.ic_delete_forever_24),
                         desc = stringResource(id = R.string.cd_delete_forever_note),
@@ -115,6 +98,69 @@ fun RecoverNoteScreen(
             state,
             stateNoteVM = stateNoteVM
         )
+
+        // Diálogo de confirmación de eliminación
+        if (state.showDeleteConfirmation){
+            AlertDialog(
+                onDismissRequest = { stateNoteVM.showDeleteConfirmation() },
+                title = { Text(text = stringResource(id = R.string.cd_delete_forever_note)) },
+                text = { Text(text = stringResource(id = R.string.dialog_delete_forever_message)) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        stateNoteVM.showDeleteConfirmation()
+                        notasVM.deleteNote(
+                            Notas(id = id,
+                                title = state.title,
+                                content = state.content,
+                                create_date = state.create_date,
+                                edit_date = state.edit_date,
+                                color_note = state.selectedColor.toArgb()
+                            )
+                        )
+                        navController.popBackStack()
+                    }) {
+                        Text(text = stringResource(id = R.string.dialog_confirm))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { stateNoteVM.showDeleteConfirmation() }) {
+                        Text(text = stringResource(id = R.string.txt_close))
+                    }
+                }
+            )
+        }
+        // Diálogo de confirmación de recuperación
+        if (state.showRecoverConfirmation){
+            AlertDialog(
+                onDismissRequest = { stateNoteVM.showRecoverConfirmation() },
+                title = { Text(text = stringResource(id = R.string.cd_recover_note)) },
+                text = { Text(text = stringResource(id = R.string.dialog_recover_message)) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        stateNoteVM.showRecoverConfirmation()
+                        notasVM.updateNote(
+                            Notas(
+                                id = id,
+                                title = state.title,
+                                content = state.content,
+                                create_date = state.create_date,
+                                edit_date = state.edit_date,
+                                delete = false,
+                                color_note = state.selectedColor.toArgb()
+                            )
+                        )
+                        navController.popBackStack()
+                    }) {
+                        Text(text = stringResource(id = R.string.dialog_confirm))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { stateNoteVM.showRecoverConfirmation() }) {
+                        Text(text = stringResource(id = R.string.txt_close))
+                    }
+                }
+            )
+        }
     }
 }
 

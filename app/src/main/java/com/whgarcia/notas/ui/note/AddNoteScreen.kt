@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +27,7 @@ import com.whgarcia.notas.state.NotasState
 import com.whgarcia.notas.ui.components.BoxWithIconButton
 import com.whgarcia.notas.ui.components.ColorPickerDialog
 import com.whgarcia.notas.ui.components.ContentTextField
+import com.whgarcia.notas.ui.components.CustomSnackbar
 import com.whgarcia.notas.ui.components.FloatingButton
 import com.whgarcia.notas.ui.components.MainTextField
 import com.whgarcia.notas.ui.components.dateAndTimeNow
@@ -43,8 +43,9 @@ fun AddNoteScreen(
     notasVM: NotasViewModel
 ){
     val state = stateNoteVM.state
-    var selectedColor by remember { mutableStateOf(Color.Yellow) } // Color seleccionado por defecto
     var isColorPickerVisible by remember { mutableStateOf(false) }  // Estado para controlar la visibilidad del diálogo
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,7 +72,7 @@ fun AddNoteScreen(
                         icon = painterResource(id = R.drawable.ic_palette_24),
                         desc = stringResource(id = R.string.cd_color_note),
                         modifier = Modifier.padding(end = 16.dp),
-                        contentColor = selectedColor
+                        contentColor = state.selectedColor
                     )
                 }
             )
@@ -79,19 +80,38 @@ fun AddNoteScreen(
         floatingActionButton = {
             FloatingButton(
                 onClick = {
-                    notasVM.addNote(
-                        Notas(
-                            title = state.title,
-                            content = state.content,
-                            create_date = dateAndTimeNow(),
-                            edit_date = dateAndTimeNow(),
-                            color_note = selectedColor.toArgb()
-                        )
-                    )
-                    navController.popBackStack()
+                    when{
+                        state.title.isEmpty() -> {
+                            stateNoteVM.showTitleValidation()
+                        }
+                        state.content.isEmpty() -> {
+                            stateNoteVM.showContentValidation()
+                        }
+                        else -> {
+                            notasVM.addNote(
+                                Notas(
+                                    title = state.title,
+                                    content = state.content,
+                                    create_date = dateAndTimeNow(),
+                                    edit_date = dateAndTimeNow(),
+                                    color_note = state.selectedColor.toArgb()
+                                )
+                            )
+                            navController.popBackStack()
+                        }
+                    }
                 },
                 icon = painterResource(id = R.drawable.ic_save_24),
-                desc = stringResource(id = R.string.cd_save_note))
+                desc = stringResource(id = R.string.cd_save_note)
+            )
+        },
+        snackbarHost = {
+            if (state.showTitleError) {
+                CustomSnackbar(onClick = { stateNoteVM.showTitleValidation() }, title = stringResource(id = R.string.txt_title_validation))
+            }
+            if (state.showContentError) {
+                CustomSnackbar(onClick = { stateNoteVM.showContentValidation() }, title = stringResource(id = R.string.txt_content_validation))
+            }
         }
     ){ innerPadding ->
         AddNoteContent(
@@ -102,9 +122,9 @@ fun AddNoteScreen(
         // Mostrar el diálogo de selección de color cuando `isColorPickerVisible` sea true
         if (isColorPickerVisible) {
             ColorPickerDialog(
-                selectedColor = selectedColor,
+                selectedColor = state.selectedColor,
                 onColorSelected = { color ->
-                    selectedColor = color  // Actualizar el color seleccionado
+                    stateNoteVM.updateSelectedColor(color)  // Actualizar el color seleccionado
                     isColorPickerVisible = false  // Cerrar el diálogo al seleccionar un color
                 },
                 onDismiss = {

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -44,14 +43,6 @@ fun DeleteNoteScreen(navController: NavHostController, notasVM: NotasViewModel) 
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp)
-                    )
-                },
-                actions = {
-                    // Botón para eliminar todas las notas
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_delete_24),
-                        contentDescription = stringResource(id = R.string.cd_delete_all_notes),
-                        modifier = Modifier.padding(end = 16.dp)
                     )
                 },
                 navigationIcon = {

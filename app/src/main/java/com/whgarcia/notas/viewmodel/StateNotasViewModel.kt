@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.whgarcia.notas.repository.NotasRepository
@@ -27,8 +28,33 @@ class StateNotasViewModel @Inject constructor(private val repository: NotasRepos
         }
     }
 
+    // Función para cambiar de modo vista prevía a editar
     fun toggleEditMode(){
         state = state.copy(edit = !state.edit)
+    }
+
+    // Funciones para mostrar errores de validación
+    fun showTitleValidation(){
+        state = state.copy(showTitleError = !state.showTitleError)
+    }
+
+    fun showContentValidation(){
+        state = state.copy(showContentError = !state.showContentError)
+    }
+
+    // Función para actualizar el color seleccionado
+    fun updateSelectedColor(color: Color) {
+        state = state.copy(selectedColor = color)
+    }
+
+    // Función para mostrar la alerta de confirmación de eliminación
+    fun showDeleteConfirmation(){
+        state = state.copy(showDeleteConfirmation = !state.showDeleteConfirmation)
+    }
+
+    // Función para mostrar la alerta de confirmación de recuperación
+    fun showRecoverConfirmation(){
+        state = state.copy(showRecoverConfirmation = !state.showRecoverConfirmation)
     }
 
     fun getNoteById(id: Long){
@@ -40,7 +66,7 @@ class StateNotasViewModel @Inject constructor(private val repository: NotasRepos
                         content = item.content,
                         create_date = item.create_date,
                         edit_date = item.edit_date,
-                        color = item.color_note
+                        selectedColor = Color(item.color_note)
                     )
                 }else{
                     Log.d("StateNotasViewModel", "Error: Objeto nulo")
@@ -56,7 +82,9 @@ class StateNotasViewModel @Inject constructor(private val repository: NotasRepos
             create_date = "",
             edit_date = "",
             edit = false,
-            color = 0
+            selectedColor = Color.Yellow,
+            showTitleError = false,
+            showContentError = false
         )
     }
 }

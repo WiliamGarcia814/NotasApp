@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -23,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +39,7 @@ import com.whgarcia.notas.state.NotasState
 import com.whgarcia.notas.ui.components.BoxWithIconButton
 import com.whgarcia.notas.ui.components.ColorPickerDialog
 import com.whgarcia.notas.ui.components.ContentTextField
+import com.whgarcia.notas.ui.components.CustomSnackbar
 import com.whgarcia.notas.ui.components.FloatingButton
 import com.whgarcia.notas.ui.components.MainTextField
 import com.whgarcia.notas.ui.components.dateAndTimeNow
@@ -55,17 +57,11 @@ fun EditNoteScreen(
     // Cargar la nota cuando se lance el Composable
     val state = stateNoteVM.state
     var expanded by remember { mutableStateOf(false) } // Estado para el menú desplegable
-    var selectedColor by remember { mutableStateOf(Color(state.color)) } // Color seleccionado por defecto
     var isColorPickerVisible by remember { mutableStateOf(false) }  // Estado para controlar la visibilidad del diálogo
 
     // Cargar la nota cuando se lance el Composable
     LaunchedEffect(Unit) {
         stateNoteVM.getNoteById(id)
-    }
-
-    // Observar cambios en el estado y actualizar el color
-    LaunchedEffect(state) {
-        selectedColor = Color(state.color) // Actualizar el color seleccionado cuando el estado cambia
     }
 
     // Manejar el botón "Atrás" del sistema
@@ -143,19 +139,7 @@ fun EditNoteScreen(
                                 },
                                 onClick = {
                                     expanded = false
-                                    // Acción cuando se presiona eliminar
-                                    notasVM.updateNote(
-                                        Notas(
-                                            id = id,
-                                            title = state.title,
-                                            content = state.content,
-                                            create_date = state.create_date,
-                                            edit_date = state.edit_date,
-                                            delete = true,
-                                            color_note = state.color
-                                        )
-                                    )
-                                    navController.popBackStack()
+                                    stateNoteVM.showDeleteConfirmation() // Mostrar el diálogo de confirmación
                                 }
                             )
                         }
@@ -166,7 +150,7 @@ fun EditNoteScreen(
                             icon = painterResource(id = R.drawable.ic_palette_24),
                             desc = stringResource(id = R.string.cd_color_note),
                             modifier = Modifier.padding(end = 16.dp),
-                            contentColor = selectedColor
+                            contentColor = state.selectedColor
                         )
                     }
                 }
@@ -176,23 +160,41 @@ fun EditNoteScreen(
             if (state.edit){
                 FloatingButton(
                     onClick = {
-                        // Actualiza la nota en ViewModel
-                        notasVM.updateNote(
-                            Notas(
-                                id = id,
-                                title = state.title,
-                                content = state.content,
-                                create_date = state.create_date,
-                                edit_date = dateAndTimeNow(),
-                                color_note = selectedColor.toArgb()
-                            )
-                        )
-                        // Navega hacia atrás después de actualizar la nota
-                        navController.popBackStack()
+                        when{
+                            state.title.isEmpty() -> {
+                                stateNoteVM.showTitleValidation()
+                            }
+                            state.content.isEmpty() -> {
+                                stateNoteVM.showContentValidation()
+                            }
+                            else -> {
+                                // Actualiza la nota en ViewModel
+                                notasVM.updateNote(
+                                    Notas(
+                                        id = id,
+                                        title = state.title,
+                                        content = state.content,
+                                        create_date = state.create_date,
+                                        edit_date = dateAndTimeNow(),
+                                        color_note = state.selectedColor.toArgb()
+                                    )
+                                )
+                                // Navega hacia atrás después de actualizar la nota
+                                navController.popBackStack()
+                            }
+                        }
                     },
                     icon = painterResource(id = R.drawable.ic_save_24),
                     desc = stringResource(id = R.string.cd_save_note)
                 )
+            }
+        },
+        snackbarHost = {
+            if (state.showTitleError) {
+                CustomSnackbar(onClick = { stateNoteVM.showTitleValidation() }, title = stringResource(id = R.string.txt_title_validation))
+            }
+            if (state.showContentError) {
+                CustomSnackbar(onClick = { stateNoteVM.showContentValidation() }, title = stringResource(id = R.string.txt_content_validation))
             }
         }
     ){ innerPadding ->
@@ -202,16 +204,50 @@ fun EditNoteScreen(
             state,
             stateNoteVM = stateNoteVM
         )
+
         // Mostrar el diálogo de selección de color cuando `isColorPickerVisible` sea true
         if (isColorPickerVisible) {
             ColorPickerDialog(
-                selectedColor = selectedColor,
+                selectedColor = state.selectedColor,
                 onColorSelected = { color ->
-                    selectedColor = color  // Actualizar el color seleccionado
+                    stateNoteVM.updateSelectedColor(color)  // Actualizar el color seleccionado
                     isColorPickerVisible = false  // Cerrar el diálogo al seleccionar un color
                 },
                 onDismiss = {
                     isColorPickerVisible = false  // Cerrar el diálogo si se cancela
+                }
+            )
+        }
+
+        // Diálogo de confirmación de eliminación
+        if (state.showDeleteConfirmation){
+            AlertDialog(
+                onDismissRequest = { stateNoteVM.showDeleteConfirmation() },
+                title = { Text(text = stringResource(id = R.string.cd_delete_note)) },
+                text = { Text(text = stringResource(id = R.string.dialog_delete_message)) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        stateNoteVM.showDeleteConfirmation()
+                        notasVM.updateNote(
+                            Notas(
+                                id = id,
+                                title = state.title,
+                                content = state.content,
+                                create_date = state.create_date,
+                                edit_date = state.edit_date,
+                                delete = true,
+                                color_note = state.selectedColor.toArgb()
+                            )
+                        )
+                        navController.popBackStack()
+                    }) {
+                        Text(text = stringResource(id = R.string.dialog_confirm))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { stateNoteVM.showDeleteConfirmation() }) {
+                        Text(text = stringResource(id = R.string.txt_close))
+                    }
                 }
             )
         }

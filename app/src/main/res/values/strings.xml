@@ -10,6 +10,8 @@
     <string name="tf_content">Escribe tu nota aquí...</string>
     <string name="txt_color_note">Selecciona un color</string>
     <string name="txt_close">Cerrar</string>
+    <string name="txt_title_validation">El título no puede estar vacío.</string>
+    <string name="txt_content_validation">El contenido no puede estar vacío.</string>
 
     <string name="cd_edit_note">Editar</string>
     <string name="cd_delete_note">Eliminar</string>
@@ -21,4 +23,8 @@
     <string name="cd_more_menu">Más opciones</string>
     <string name="cd_back">Regresar</string>
     <string name="cd_color_note">Seleccionar color</string>
+    <string name="dialog_confirm">Aceptar</string>
+    <string name="dialog_delete_message">¿Está seguro de que desea enviar la nota a la papelera?</string>
+    <string name="dialog_delete_forever_message">¿Está seguro de que desea eliminar definitivamente la nota?</string>
+    <string name="dialog_recover_message">¿Está seguro que desea recuperar la nota?</string>
 </resources>

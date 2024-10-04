@@ -19,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,8 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.whgarcia.notas.R
 import com.whgarcia.notas.model.Notas
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun MainTextField(value: String, onValueChange: (String) -> Unit, enabled: Boolean) {
@@ -88,6 +91,20 @@ fun dateAndTimeNow(): String{
     return currentDateTime.format(formatter)
 }
 
+fun formatDateToDayMonth(dateString: String): String{
+    // Definir el formato original de la fecha "dd/MM/yyyy hh:mm a"
+    val originalFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+
+    // Definir el formato al que se desea convertir "d MMM, yyyy"
+    val targetFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+
+    // Convertir la cadena de texto en un objeto Date
+    val date = originalFormat.parse(dateString)
+
+    // Retornar la fecha formateada en el nuevo formato
+    return targetFormat.format(date!!)
+}
+
 @Composable
 fun GridCard(item: Notas, onClick: () -> Unit) {
     Card(
@@ -112,7 +129,7 @@ fun GridCard(item: Notas, onClick: () -> Unit) {
             )
 
             Text(
-                text = item.create_date,
+                text = formatDateToDayMonth(item.create_date),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -143,7 +160,7 @@ fun ListCard(item: Notas, onClick: () -> Unit) {
             )
 
             Text(
-                text = item.create_date,
+                text = formatDateToDayMonth(item.create_date),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -179,4 +196,23 @@ fun ColorButton(color: Color, selectedColor: Color, onClick: (Color) -> Unit) {
             .border(4.dp, if (color == selectedColor) Color.Black else Color.Transparent, shape = CircleShape)  // Borde negro si el color está seleccionado
             .clickable { onClick(color) }
     )
+}
+
+@Composable
+fun CustomSnackbar(onClick: () -> Unit, title: String){
+    Snackbar(
+        modifier = Modifier
+            .padding(16.dp),
+        action = {
+            TextButton(onClick = onClick) {
+                Text(text = "OK")
+            }
+        }
+    ) {
+        Text(
+            text = title,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+    }
 }
