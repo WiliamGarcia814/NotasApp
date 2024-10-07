@@ -11,6 +11,20 @@ Esta aplicación móvil fue desarrollada como parte de un proyecto universitario
 * **Dagger y hilt**: Para la inyección de dependencias que simplifican la gestión de dependencias en la aplicación
  
 # Capturas de pantalla
+<table>
+  <tr>
+    <td><img src="./screens/Screenshot_20241007_131424.png" alt="Pantalla Principal" width="300"/></td>
+    <td><img src="./screens/Screenshot_20241007_131621.png" alt="Añadir nota" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="./screens/Screenshot_20241007_131722.png" alt="Seleccionar color" width="300"/></td>
+    <td><img src="./screens/Screenshot_20241007_131752.png" alt="Pantalla de visualización del contenido de una nota" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="./screens/Screenshot_20241007_131834.png" alt="Pantalla papelera" width="300"/></td>
+    <td><img src="./screens/Screenshot_20241007_131843.png" alt="Pantalla de visualización del contenido de una nota eliminada" width="300"/></td>
+  </tr>
+</table>
 
 # Licencia
 Este proyecto está licenciado bajo la Licencia MIT.
