@@ -6,11 +6,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -173,10 +177,27 @@ fun ColorPickerDialog(selectedColor: Color, onColorSelected: (Color) -> Unit, on
         onDismissRequest = { onDismiss() },
         title = { Text(text = stringResource(id = R.string.txt_color_note)) },
         text = {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                ColorButton(color = Color.Red, selectedColor = selectedColor, onClick = onColorSelected)
-                ColorButton(color = Color.Green, selectedColor = selectedColor, onClick = onColorSelected)
-                ColorButton(color = Color.Blue, selectedColor = selectedColor, onClick = onColorSelected)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),  // 4 columnas
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),  // Ajustar el alto para 2 filas
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp), // Espaciado vertical
+                horizontalArrangement = Arrangement.spacedBy(8.dp)  // Espaciado horizontal
+            ) {
+                items(listOf(
+                    Color(0xFFEDFF85), // Yellow
+                    Color(0xFFFFC0C0), // Red
+                    Color(0xFF90FF95), // Green
+                    Color(0xFFB3D1FF), // Blue
+                    Color(0xFFF8C6FF), // Magenta
+                    Color(0xFFFFC6EE), // Pink
+                    Color(0xFFFFD8A5), // Orange
+                    Color(0xFF9EFFFA)  // Cyan
+                )) { color ->
+                    ColorButton(color = color, selectedColor = selectedColor, onClick = onColorSelected)
+                }
             }
         },
         confirmButton = {

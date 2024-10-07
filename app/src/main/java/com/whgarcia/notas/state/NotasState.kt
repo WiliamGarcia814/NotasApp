@@ -9,7 +9,7 @@ data class NotasState(
     val create_date: String = "",
     val edit_date: String = "",
     val edit: Boolean = false,
-    val selectedColor: Color = Color.Yellow,
+    val selectedColor: Color = Color(0xFFEDFF85), // Yellow
     val showTitleError: Boolean = false,
     val showContentError: Boolean = false,
     val showDeleteConfirmation: Boolean = false,

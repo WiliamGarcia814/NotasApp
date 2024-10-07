@@ -82,7 +82,7 @@ class StateNotasViewModel @Inject constructor(private val repository: NotasRepos
             create_date = "",
             edit_date = "",
             edit = false,
-            selectedColor = Color.Yellow,
+            selectedColor = Color(0xFFEDFF85),
             showTitleError = false,
             showContentError = false
         )
